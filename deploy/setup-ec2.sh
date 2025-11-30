@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # EC2 초기 설정 스크립트
-# 사용법: ssh -i your-key.pem ubuntu@52.79.48.108 'bash -s' < setup-ec2.sh
+# 사용법: ssh -i your-key.pem ubuntu@43.203.36.96 'bash -s' < setup-ec2.sh
 
 echo "===================================="
 echo "EC2 환경 설정 시작"

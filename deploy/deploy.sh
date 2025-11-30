@@ -5,7 +5,7 @@
 
 set -e
 
-EC2_HOST="52.79.48.108"
+EC2_HOST="43.203.36.96"
 EC2_USER="ubuntu"
 SSH_KEY="algo-study.pem"
 PROJECT_DIR="/home/ubuntu/code_study"
@@ -78,8 +78,8 @@ ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no "$EC2_USER@$EC2_HOST" << 'ENDSSH'
     echo "===================================="
     echo ""
     echo "🌐 서비스 URL:"
-    echo "  Frontend: http://52.79.48.108"
-    echo "  Backend:  http://52.79.48.108:8080"
+    echo "  Frontend: http://43.203.36.96"
+    echo "  Backend:  http://43.203.36.96:8080"
     echo ""
     echo "📊 컨테이너 상태 확인:"
     docker-compose ps
