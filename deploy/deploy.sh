@@ -51,6 +51,16 @@ rsync -avz --progress \
 
 echo "✅ 파일 전송 완료"
 
+# .env 파일 전송
+echo "🔐 환경변수 파일 전송 중..."
+if [ -f "../.env" ]; then
+    scp -i "$SSH_KEY" -o StrictHostKeyChecking=no "../.env" "$EC2_USER@$EC2_HOST:$PROJECT_DIR/.env"
+    echo "✅ .env 파일 전송 완료"
+else
+    echo "⚠️  .env 파일이 없습니다. .env.example을 참고하여 생성하세요."
+    exit 1
+fi
+
 # 배포 실행
 echo "🐳 Docker Compose로 배포 중..."
 ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no "$EC2_USER@$EC2_HOST" << 'ENDSSH'
