@@ -15,8 +15,8 @@ jobs:
 
       - name: Create SSH key file
         run: |
-          echo "${{ secrets.EC2_SSH_KEY }}" > ec2_key.pem
-          chmod 400 ec2_key.pem
+          echo "${{ secrets.EC2_SSH_KEY }}" > algo-study.pem
+          chmod 400 algo-study.pem
 
       - name: Deploy to EC2
         env:
