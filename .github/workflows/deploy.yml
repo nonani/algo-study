@@ -30,11 +30,11 @@ jobs:
             --exclude '.gradle' \
             --exclude 'dist' \
             --exclude '.git' \
-            -e "ssh -i ec2_key.pem -o StrictHostKeyChecking=no" \
+            -e "ssh -i algo-study.pem -o StrictHostKeyChecking=no" \
             ./ $EC2_USER@$EC2_HOST:/home/ubuntu/code_study/
 
           # 배포 실행
-          ssh -i ec2_key.pem -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'ENDSSH'
+          ssh -i algo-study.pem -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'ENDSSH'
             cd /home/ubuntu/code_study
             docker-compose down
             docker-compose up -d --build
@@ -43,7 +43,7 @@ jobs:
 
       - name: Cleanup
         if: always()
-        run: rm -f ec2_key.pem
+        run: rm -f algo-study.pem
 
       - name: Send deployment notification
         if: success()
