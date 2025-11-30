@@ -1,0 +1,53 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:  # 수동 실행 가능
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Create SSH key file
+        run: |
+          echo "${{ secrets.EC2_SSH_KEY }}" > ec2_key.pem
+          chmod 400 ec2_key.pem
+
+      - name: Deploy to EC2
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ubuntu
+        run: |
+          # 파일 전송
+          rsync -avz --progress \
+            --exclude 'node_modules' \
+            --exclude 'build' \
+            --exclude '.gradle' \
+            --exclude 'dist' \
+            --exclude '.git' \
+            -e "ssh -i ec2_key.pem -o StrictHostKeyChecking=no" \
+            ./ $EC2_USER@$EC2_HOST:/home/ubuntu/code_study/
+
+          # 배포 실행
+          ssh -i ec2_key.pem -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'ENDSSH'
+            cd /home/ubuntu/code_study
+            docker-compose down
+            docker-compose up -d --build
+            docker-compose ps
+          ENDSSH
+
+      - name: Cleanup
+        if: always()
+        run: rm -f ec2_key.pem
+
+      - name: Send deployment notification
+        if: success()
+        run: |
+          echo "✅ Deployment successful!"
+          echo "Frontend: http://${{ secrets.EC2_HOST }}"
+          echo "Backend: http://${{ secrets.EC2_HOST }}:8080"

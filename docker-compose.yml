@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: algostudy-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: algostudy
+      MYSQL_USER: algostudy
+      MYSQL_PASSWORD: algostudy
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - algostudy-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: algostudy-backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/algostudy?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: algostudy
+      SPRING_DATASOURCE_PASSWORD: algostudy
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - algostudy-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: algostudy-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - algostudy-network
+    restart: unless-stopped
+
+networks:
+  algostudy-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
